@@ -1,117 +1,196 @@
-const game = () => {
-	let playerScore = 0;
-	let computerScore = 0;
+let playerScore = 0;
+let computerScore = 0;
 
-	const startGame = () => {
-		const playBtn = document.querySelector(".intro button");
-		const introScreen = document.querySelector(".intro");
-		const matchScreen = document.querySelector(".match");
+let life = 3;
 
-		playBtn.addEventListener("click", () => {
-			introScreen.classList.add("fadeOut");
-			matchScreen.classList.add("fadeIn");
-			console.log(introScreen);
-			console.log(matchScreen);
-			console.log(playBtn);
-		});
-	};
+function startGame() {
+  const introSection = document.querySelector(".intro-section");
+  const game = document.querySelector(".game");
 
-	const playMatch = () => {
-		const options = document.querySelectorAll(".options button");
-		const playerHand = document.querySelector(".player-hand");
-		const computerHand = document.querySelector(".computer-hand");
-		const hands = document.querySelectorAll(".hands img");
+  introSection.classList.add("fadeOut");
+  game.classList.add("fadeIn");
 
-		hands.forEach((hand) => {
-			hand.addEventListener("animationend", function () {
-				this.style.animation = "";
-			});
-		});
+  playMatch();
+}
 
-		const computerOptions = ["rock", "paper", "scissors"];
+function playMatch() {
+  const hands = document.querySelectorAll(".hands img");
 
-		options.forEach((option) => {	
-			option.addEventListener("click", function () {
-				console.log(this);
-				const computerNumber = Math.floor(Math.random() * 3);
-				const computerChoice = computerOptions[computerNumber];
-				console.log(computerChoice);
+  hands.forEach((hand) => {
+    hand.addEventListener("animationend", function () {
+      this.style.animation = "";
+    });
+  });
+}
 
-				console.log(option.textContent);
+function optionClick(choice) {
+  const playerHand = document.querySelector(".player-hand");
+  const computerHand = document.querySelector(".computer-hand");
 
-				setTimeout(() => {
-					playerHand.src = `./assets/${this.textContent}.png`;
-					computerHand.src = `./assets/${computerChoice}.png`;
-					compareHands(option.textContent, computerChoice);
-				}, 2000);
+  setTimeout(() => {
+    const computerChoiceString = computerChoice();
+    displayHand(choice, playerHand);
+    displayHand(computerChoiceString, computerHand);
 
-				playerHand.style.animation = "shakePlayer 2s ease";
-				computerHand.style.animation = "shakeComputer 2s ease";
+    compareHands(choice, computerChoiceString);
+  }, 2000);
 
-                playerHand.src = "./assets/rock.png";
-                computerHand.src = "./assets/rock.png"
-			});
-		});
-	};
+  playerHand.src =
+    "https://i.ya-webdesign.com/images/rock-paper-scissors-png-17.png";
+  computerHand.src =
+    "https://i.ya-webdesign.com/images/rock-paper-scissors-png-17.png";
 
-	const updateScore = () => {
-		const playerScoreText = document.querySelector(".player-score p");
-		const computerScoreText = document.querySelector(".computer-score p");
+  playAimation();
+}
 
-		playerScoreText.textContent = playerScore;
-		computerScoreText.textContent = computerScore;
-	};
+function playAimation() {
+  const playerHand = document.querySelector(".player-hand");
+  const computerHand = document.querySelector(".computer-hand");
 
-	const compareHands = (playerChoice, computerChoice) => {
-		const winner = document.querySelector(".winner");
+  playerHand.style.animation = "shakePlayer 2s ease";
+  computerHand.style.animation = "shakeComputer 2s ease";
+}
 
-		if (playerChoice === computerChoice) {
-			winner.textContent = "It is a tie";
-			return;
-		}
+function computerChoice() {
+  const computerOptionsArray = ["rock", "paper", "scissors"];
+  const computerOptionsIndex = Math.floor(Math.random() * 3);
+  const computerChoiceString = computerOptionsArray[computerOptionsIndex];
 
-		if (playerChoice === "rock") {
-			if (computerChoice === "scissors") {
-				winner.textContent = "Player wins";
-				playerScore++;
-			} else {
-				winner.textContent = "Computer wins";
-				computerScore++;
-			}
-			updateScore();
-			return;
-		}
+  return computerChoiceString;
+}
 
-		if (playerChoice === "paper") {
-			if (computerChoice === "rock") {
-				winner.textContent = "Player wins";
-				playerScore++;
-			} else {
-				winner.textContent = "Computer wins";
-				computerScore++;
-			}
-			updateScore();
+function displayHand(choice, hand) {
+  switch (choice) {
+    case "rock":
+      hand.src =
+        "https://i.ya-webdesign.com/images/rock-paper-scissors-png-17.png";
+      break;
 
-			return;
-		}
+    case "paper":
+      hand.src =
+        "https://www3.bostonglobe.com//rw/Boston/2011-2020/WebGraphics/Metro/BostonGlobe.com/2018/05/rockpaperscissors/assets/paper--left.png";
+      break;
 
-		if (playerChoice === "scissors") {
-			if (computerChoice === "paper") {
-				winner.textContent = "Player wins";
-				playerScore++;
-			} else {
-				winner.textContent = "Computer wins";
-				computerScore++;
-			}
-			updateScore();
+    case "scissors":
+      hand.src =
+        "https://www3.bostonglobe.com//rw/Boston/2011-2020/WebGraphics/Metro/BostonGlobe.com/2018/05/rockpaperscissors/assets/scissors--left.png";
+      break;
+  }
+}
 
-			return;
-		}
-	};
+function compareHands(playerChoice, computerChoice) {
+  const winner = document.querySelector(".winner");
 
-	startGame();
-	playMatch();
-};
+  if (playerChoice === computerChoice) {
+    winner.textContent = "It is a tie";
+    return;
+  }
 
-game();
-console.log("fine");
+  if (playerChoice === "rock") {
+    if (computerChoice === "scissors") {
+      winner.textContent = "Player wins";
+      playerScore++;
+    } else {
+      winner.textContent = "Computer wins";
+      computerScore++;
+
+      life--;
+      checkLife();
+    }
+    updateScore();
+    return;
+  }
+
+  if (playerChoice === "paper") {
+    if (computerChoice === "rock") {
+      winner.textContent = "Player wins";
+      playerScore++;
+    } else {
+      winner.textContent = "Computer wins";
+      computerScore++;
+
+      life--;
+      checkLife();
+    }
+    updateScore();
+
+    return;
+  }
+
+  if (playerChoice === "scissors") {
+    if (computerChoice === "paper") {
+      winner.textContent = "Player wins";
+      playerScore++;
+    } else {
+      winner.textContent = "Computer wins";
+      computerScore++;
+
+      life--;
+      checkLife();
+    }
+    updateScore();
+
+    return;
+  }
+}
+
+function checkLife() {
+  const lifeOne = document.querySelector(".life-one");
+  const lifeTwo = document.querySelector(".life-two");
+  const lifeThree = document.querySelector(".life-three");
+
+  if (life === 2) {
+    lifeOne.classList.add("fadeOut");
+  }
+  if (life === 1) {
+    lifeTwo.classList.add("fadeOut");
+  }
+  if (life === 0) {
+    lifeThree.classList.add("fadeOut");
+    alert("Sorry you lose!🙁\n Better luck next time🙂");
+
+    const buttons = document.querySelectorAll(".options button");
+
+    buttons.forEach((button) => {
+      button.disabled = true;
+      button.classList.add("fadeOut");
+    });
+
+    const replay = document.querySelector(".replay");
+    replay.classList.add("fadeIn");
+  }
+}
+
+function updateScore() {
+  const playerScoreText = document.querySelector(".player-score p");
+  const computerScoreText = document.querySelector(".computer-score p");
+
+  playerScoreText.textContent = playerScore;
+  computerScoreText.textContent = computerScore;
+}
+
+function replay() {
+  const optionButtons = document.querySelectorAll(".options button");
+  const replayButton = document.querySelector(".replay");
+  const lifeImages = document.querySelectorAll(".life img");
+
+  replayButton.classList.remove("fadeIn");
+  replayButton.classList.add("fadeOut");
+
+  optionButtons.forEach((optionButton) => {
+    optionButton.disabled = false;
+    optionButton.classList.add("fadeIn");
+  });
+
+  playerScore = 0;
+  computerScore = 0;
+
+  updateScore();
+
+  lifeImages.forEach((lifeImage) => {
+    lifeImage.classList.remove("fadeOut");
+    lifeImage.classList.add("fadeIn");
+  });
+
+  playMatch();
+}
